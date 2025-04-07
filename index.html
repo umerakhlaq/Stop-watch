@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Advanced Stopwatch</title>
+    <style>
+        /* @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@600&display=swap'); */
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            transition: background 0.4s, color 0.4s;
+            background-color: #f2f2f2;
+        }
+
+        .dark-mode {
+            background-color: #121212;
+            color: #ffffff;
+        }
+
+        .container {
+            background: white;
+            border-radius: 15px;
+            padding: 30px 40px;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .dark-mode .container {
+            background-color: #1e1e1e;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+        }
+
+        .time {
+            font-family: 'Orbitron', monospace;
+            font-size: 48px;
+            margin: 20px 0;
+        }
+
+        .buttons {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            font-weight: bold;
+            border: none;
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        #startBtn {
+            background-color: #28a745;
+        }
+
+        #stopBtn {
+            background-color: #ffc107;
+            display: none;
+            color: #000;
+        }
+
+        #resetBtn {
+            background-color: #dc3545;
+        }
+
+        #lapBtn {
+            background-color: #007bff;
+        }
+
+        #darkModeBtn {
+            background-color: #6c757d;
+        }
+
+        ul#laps {
+            margin-top: 20px;
+            text-align: left;
+            list-style: none;
+            padding: 0;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+
+        ul#laps li {
+            margin-bottom: 5px;
+            font-family: 'Courier New', monospace;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <h1>Advanced Stopwatch</h1>
+        <div class="time" id="display">00:00:00.00</div>
+        <div class="buttons">
+            <button id="startBtn" onclick="startStopwatch()">Start</button>
+            <button id="stopBtn" onclick="stopStopwatch()">Stop</button>
+            <button id="resetBtn" onclick="resetStopwatch()">Reset</button>
+            <button id="lapBtn" onclick="addLap()">Lap</button>
+            <button id="darkModeBtn" onclick="toggleDarkMode()">Dark Mode</button>
+        </div>
+        <ul id="laps"></ul>
+    </div>
+
+    <!-- Sound file -->
+    <audio id="beep">
+        <source src="beep-08b.mp3" type="audio/mp3">
+    </audio>
+    <audio id="beep1">
+        <source src="iphone_pipi_ring_ton (mp3cut.net).mp3" type="audio/mp3">
+    </audio>
+    <script>
+        let display = document.getElementById("display");
+        let startBtn = document.getElementById("startBtn");
+        let stopBtn = document.getElementById("stopBtn");
+        let beep = document.getElementById("beep");
+
+        let interval;
+        let seconds = 0, minutes = 0, hours = 0;
+
+        function updateDisplay() {
+            let hr = (hours < 10 ? "0" : "") + hours;
+            let min = (minutes < 10 ? "0" : "") + minutes;
+            let sec = (seconds < 10 ? "0" : "") + seconds;
+            display.textContent = `${hr}:${min}:${sec}`;
+        }
+
+        function startStopwatch() {
+            interval = setInterval(() => {
+                seconds++;
+                if (seconds === 100) {
+                    seconds = 0;
+                    minutes++;
+                    beep.play(); // sound when minute changes
+                }
+                if (minutes === 60) {
+                    minutes = 0;
+                    hours++;
+                    beep1.play(); // sound when hour changes
+                }
+                updateDisplay();
+            }, 10);
+            startBtn.style.display = "none";
+            stopBtn.style.display = "inline-block";
+        }
+
+        function stopStopwatch() {
+            clearInterval(interval);
+            startBtn.style.display = "inline-block";
+            stopBtn.style.display = "none";
+        }
+
+        function resetStopwatch() {
+            clearInterval(interval);
+            seconds = 0;
+            minutes = 0;
+            hours = 0;
+            updateDisplay();
+            document.getElementById("laps").innerHTML = "";
+            startBtn.style.display = "inline-block";
+            stopBtn.style.display = "none";
+        }
+
+        function addLap() {
+            let lapList = document.getElementById("laps");
+            let li = document.createElement("li");
+            li.textContent = display.textContent;
+            lapList.appendChild(li);
+        }
+
+        function toggleDarkMode() {
+            document.body.classList.toggle("dark-mode");
+        }
+
+        updateDisplay(); // initialize display
+    </script>
+
+</body>
+
+</html>
